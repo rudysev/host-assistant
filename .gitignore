@@ -1,0 +1,43 @@
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+
+# TLS / keys (certs live under ~/.host-assistant/tls/ by default)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Local audio artifacts from scripts/test_client
+*.pcm
+*.wav
+*.aiff
+reply.pcm
+sample.wav
+sample.aiff
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~

@@ -1,0 +1,17 @@
+# Local voice host (demo / starting point). Verified extra names from pipecat-ai's pyproject.toml.
+# Install with:  pip install -r requirements.txt
+#
+#   silero      -> Silero VAD
+#   whisper     -> faster-whisper (the whisper STT module imports it even to use the MLX class)
+#   mlx-whisper -> Whisper on Apple Silicon (MLX) — current STT; swap for Linux
+#   kokoro      -> Kokoro TTS (kokoro-onnx)
+#   openai      -> OpenAI-compatible LLM client (points at Ollama)
+#   websocket   -> WebSocket server transport
+pipecat-ai[silero,whisper,mlx-whisper,kokoro,openai,websocket]==1.5.0
+
+# Web search grounding (default: Tavily; optional duckduckgo via WEB_SEARCH_BACKEND).
+tavily-python
+duckduckgo-search
+
+# Config.
+python-dotenv
