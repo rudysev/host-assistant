@@ -18,6 +18,10 @@ class ProtocolEncoderTests(unittest.TestCase):
             {"type": "input_transcript", "text": "hello"},
         )
 
+    def test_user_started_and_stopped_speaking(self) -> None:
+        self.assertEqual(json.loads(protocol.user_started_speaking()), {"type": "user_started_speaking"})
+        self.assertEqual(json.loads(protocol.user_stopped_speaking()), {"type": "user_stopped_speaking"})
+
     def test_output_transcript(self) -> None:
         self.assertEqual(
             json.loads(protocol.output_transcript("hi there ")),

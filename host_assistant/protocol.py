@@ -13,6 +13,8 @@ from typing import Any
 # host -> app
 READY = "ready"
 INPUT_TRANSCRIPT = "input_transcript"
+USER_STARTED_SPEAKING = "user_started_speaking"
+USER_STOPPED_SPEAKING = "user_stopped_speaking"
 OUTPUT_TRANSCRIPT = "output_transcript"
 MODEL_GENERATING = "model_generating"
 TURN_COMPLETE = "turn_complete"
@@ -38,6 +40,14 @@ def ready() -> str:
 
 def input_transcript(text: str) -> str:
     return json.dumps({"type": INPUT_TRANSCRIPT, "text": text})
+
+
+def user_started_speaking() -> str:
+    return json.dumps({"type": USER_STARTED_SPEAKING})
+
+
+def user_stopped_speaking() -> str:
+    return json.dumps({"type": USER_STOPPED_SPEAKING})
 
 
 def output_transcript(text: str) -> str:

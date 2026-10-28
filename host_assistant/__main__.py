@@ -102,7 +102,7 @@ async def main() -> None:
     )
 
     async def push_message(message: str) -> None:
-        # Urgent control (ready, tool_call, error, input_transcript) must reach the Portal
+        # Urgent control (ready, tool_call, error, input_transcript, VAD start/stop) must reach the Portal
         # immediately — do not queue at the pipeline input while the LLM/TTS path is busy.
         await transport.output().send_message(OutputTransportMessageUrgentFrame(message=message))
 

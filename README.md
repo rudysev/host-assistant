@@ -34,9 +34,9 @@ Portal (Android) ── 16 kHz PCM (binary over wss) ──►  host_assistant (
    silent post-tool pass says "Done." so the answer always has audio.
 
 Wire: one `wss://` socket. Binary = raw PCM; text = JSON control (`setup`, `user_text`,
-`tool_result`, `ready`, `input_transcript`, `output_transcript`, `model_generating`,
-`turn_complete`, `interrupted`, `tool_call`, `error`). Host tools are an allowlist
-(`web_search`, `get_weather`); everything else runs on the Portal.
+`tool_result`, `ready`, `input_transcript`, `user_started_speaking`, `user_stopped_speaking`,
+`output_transcript`, `model_generating`, `turn_complete`, `interrupted`, `tool_call`, `error`). Host tools
+are an allowlist (`web_search`, `get_weather`); everything else runs on the Portal.
 
 TLS: self-signed cert under `~/.host-assistant/tls/` on first boot (`openssl` required). The app
 uses trust-all for this LAN demo — not production PKI.
