@@ -29,7 +29,9 @@ Portal (Android) ── 16 kHz PCM (binary over wss) ──►  host_assistant (
 2. **Ollama** runs the LLM with portal-assistant tools from `setup`, plus host-only `get_weather`
    (Open-Meteo) and `web_search` (Tavily or DuckDuckGo).
 3. **Kokoro** streams 24 kHz speech back; non-host tool calls round-trip to the app via
-   `tool_call` / `tool_result`.
+   `tool_call` / `tool_result`. Tool turns follow Gemini 3.8's order: `tool_call`, then `turn_complete` for
+   the tool-call turn; the answer is a turn of its own (`model_generating`, audio, `turn_complete`), and a
+   silent post-tool pass says "Done." so the answer always has audio.
 
 Wire: one `wss://` socket. Binary = raw PCM; text = JSON control (`setup`, `user_text`,
 `tool_result`, `ready`, `input_transcript`, `output_transcript`, `model_generating`,

@@ -38,6 +38,7 @@ from pipecat.workers.runner import WorkerRunner
 from host_assistant import protocol
 from host_assistant.config import CONFIG, ConfigError, require_openssl, startup_warnings, web_search_available
 from host_assistant.logging_config import configure_logging
+from host_assistant.pipeline.answer_fallback import PostToolAnswerFallback
 from host_assistant.pipeline.bridge import DEFAULT_TURN_ERROR, ControlBridge
 from host_assistant.pipeline.input_transcript import InputTranscriptEmitter
 from host_assistant.pipeline.serializer import PortalSerializer
@@ -66,6 +67,7 @@ async def main() -> None:
 
     session = Session()
     bridge = ControlBridge()
+    answer_fallback = PostToolAnswerFallback()
 
     transport = TlsWebsocketServerTransport(
         host=CONFIG.host,
@@ -123,6 +125,7 @@ async def main() -> None:
             input_transcript,
             aggregators.user(),
             llm,
+            answer_fallback,
             tts,
             bridge,
             transport.output(),

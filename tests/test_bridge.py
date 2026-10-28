@@ -79,27 +79,14 @@ class ControlBridgeTests(unittest.TestCase):
         self.assertEqual(self._controls(LLMFullResponseEndFrame()), [])
         self.assertEqual(self._controls(BotStoppedSpeakingFrame()), [{"type": "turn_complete"}])
 
-    def test_host_tool_silent_follow_up_emits_turn_complete(self) -> None:
-        """Post-tool LLM pass with no TTS must not leave the app waiting forever."""
+    def test_post_tool_pass_never_completes_the_turn_before_playback(self) -> None:
+        """PostToolAnswerFallback makes every post-tool pass speak, so its turn completes after playback only."""
         self._controls(LLMFullResponseStartFrame())
         self._controls(FunctionCallsStartedFrame(function_calls=[]))
         self._controls(LLMFullResponseEndFrame())
         self._controls(LLMFullResponseStartFrame())
-        self._controls(LLMFullResponseEndFrame())
-        asyncio.run(self.bridge._finish_silent_post_tool_turn())
-        self.assertTrue(self.bridge._turn_complete_sent)
-
-    def test_multi_tool_turn_defers_until_final_silent_end(self) -> None:
-        self._controls(LLMFullResponseStartFrame())
-        self._controls(FunctionCallsStartedFrame(function_calls=[]))
         self.assertEqual(self._controls(LLMFullResponseEndFrame()), [])
-        self._controls(LLMFullResponseStartFrame())
-        self._controls(FunctionCallsStartedFrame(function_calls=[]))
-        self.assertEqual(self._controls(LLMFullResponseEndFrame()), [])
-        self._controls(LLMFullResponseStartFrame())
-        self._controls(LLMFullResponseEndFrame())
-        asyncio.run(self.bridge._finish_silent_post_tool_turn())
-        self.assertTrue(self.bridge._turn_complete_sent)
+        self.assertFalse(self.bridge._turn_complete_sent)
 
     def test_reset_turn_state_clears_bot_speaking(self) -> None:
         self.bridge._bot_speaking = True
@@ -121,12 +108,9 @@ class ControlBridgeTests(unittest.TestCase):
 
     def test_sync_turn_completed_clears_tool_latches(self) -> None:
         self.bridge._tool_round_trip = True
-        self.bridge._awaiting_post_tool_speech = True
         self.bridge.sync_turn_completed()
         self.assertFalse(self.bridge._tool_round_trip)
-        self.assertFalse(self.bridge._awaiting_post_tool_speech)
         self.assertTrue(self.bridge._turn_complete_sent)
-        self.assertFalse(self.bridge._pending_silent_complete)
 
     def test_interrupted_only_when_bot_was_speaking(self) -> None:
         self.bridge._bot_speaking = True

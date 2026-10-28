@@ -4,8 +4,8 @@ Holds the glue that isn't pure frame conversion:
   - **setup**: apply the app's system prompt; register tools from setup with the LLM. Tools in
     :data:`protocol.HOST_EXECUTED_TOOLS` run here; every other declared tool round-trips to
     portal-assistant.
-  - **portal-tool round-trip**: when the model calls a non-host tool, push ``tool_call`` to the app
-    and await ``tool_result`` (correlated by call id).
+  - **portal-tool round-trip**: when the model calls a non-host tool, push ``tool_call`` then ``turn_complete``
+    (the tool-call turn, as Gemini 3.8 does) to the app and await ``tool_result`` (correlated by call id).
   - **host tools**: ``web_search`` and ``get_weather`` execute locally and return straight to the model.
 
 The system prompt is sent once per WebSocket session (in ``setup``) and kept in ``LLMContext`` for all
@@ -236,6 +236,9 @@ class Session:
         self._pending[call_id] = fut
         log.info("portal tool call → app: %s(%s)", name, args or {})
         await self._send(protocol.tool_call([{"id": call_id, "name": name, "args": args or {}}]))
+        # Gemini 3.8's order, which the app follows: the tool-call turn completes before our result, and the answer
+        # comes as a turn of its own (ControlBridge completes it after playback).
+        await self._send(protocol.turn_complete())
         try:
             result = await asyncio.wait_for(fut, timeout=PORTAL_TOOL_TIMEOUT_S)
             log.info("portal tool result ← app: %s → %s", name, result)

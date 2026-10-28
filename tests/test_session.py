@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import unittest
 
 from host_assistant.pipeline.session import Session
@@ -74,6 +75,24 @@ class SessionToolResultTests(unittest.IsolatedAsyncioTestCase):
             result = await session.on_client_text('{"type": "tool_result", "results": "bad"}')
         self.assertIsNone(result)
         self.assertTrue(any("must be a list" in m for m in logs.output))
+
+
+class SessionToolCallTurnTests(unittest.IsolatedAsyncioTestCase):
+    async def test_portal_tool_call_completes_the_tool_call_turn(self) -> None:
+        """Gemini 3.8's order: the tool-call turn completes before the app's result; the answer is a turn of its own."""
+        session = Session()
+        sent: list[dict] = []
+
+        async def push(message: str) -> None:
+            sent.append(json.loads(message))
+
+        session._push_message = push
+        call = asyncio.create_task(session._call_portal_tool("portal.set_timer", {"duration_seconds": 60}))
+        await asyncio.sleep(0)
+        self.assertEqual([m["type"] for m in sent], ["tool_call", "turn_complete"])
+
+        session._resolve_tool_results([{"id": sent[0]["calls"][0]["id"], "response": {"ok": True}}])
+        self.assertEqual(await call, {"ok": True})
 
 
 if __name__ == "__main__":
