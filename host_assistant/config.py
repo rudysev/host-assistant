@@ -120,7 +120,7 @@ def load_config() -> Config:
         host=_env_str("HOST", "0.0.0.0"),
         port=_env_int("PORT", 8080, minimum=1),
         ollama_base_url=_env_str("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
-        ollama_model=_env_str("OLLAMA_MODEL", "qwen3.5:9b"),
+        ollama_model=_env_str("OLLAMA_MODEL", "qwen3.5:27b"),
         ollama_max_tokens=_env_int("OLLAMA_MAX_TOKENS", 1024, minimum=1),
         warm_ollama_at_startup=_env_bool("WARM_OLLAMA_AT_STARTUP", True),
         warm_kokoro_at_startup=_env_bool("WARM_KOKORO_AT_STARTUP", True),

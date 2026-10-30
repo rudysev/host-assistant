@@ -89,6 +89,8 @@ async def main() -> None:
         settings=OpenAILLMService.Settings(
             model=CONFIG.ollama_model,
             max_tokens=CONFIG.ollama_max_tokens,
+            # Qwen3.5 ignores a /no_think prompt; hidden reasoning after a tool result often left the answer empty.
+            extra={"reasoning_effort": "none"},
         ),
     )
     stt = WhisperSTTServiceMLX(
@@ -211,7 +213,7 @@ async def main() -> None:
         warm_task = asyncio.create_task(_warm())
 
     log.info(
-        "Local voice host listening on wss://%s:%s  model=%s  max_tokens=%d  (/no_think prompt)",
+        "Local voice host listening on wss://%s:%s  model=%s  max_tokens=%d  (reasoning off)",
         CONFIG.host,
         CONFIG.port,
         CONFIG.ollama_model,

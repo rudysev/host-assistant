@@ -76,7 +76,7 @@ faster-whisper path is the natural drop-in).
 ## Install
 
 ```bash
-ollama pull qwen3.5:9b
+ollama pull qwen3.5:27b
 OLLAMA_KEEP_ALIVE=-1 ollama serve   # terminal 1
 
 cd host-assistant
@@ -141,8 +141,9 @@ tests/
 
 ## Notes
 
-- **Latency:** STT/TTS ~1 s warm; LLM often 10–20 s on a tool turn (two passes). Prefer `qwen3.5:9b`,
-  `OLLAMA_KEEP_ALIVE=-1`, and `get_weather` over `web_search` for weather.
+- **Latency:** STT/TTS ~1 s warm; LLM ~2–6 s per pass on `qwen3.5:27b` with reasoning off (two passes on a tool
+  turn). `qwen3.5:9b` is faster but fakes actions and misses `portal.end_conversation`. Use `OLLAMA_KEEP_ALIVE=-1`,
+  and `get_weather` over `web_search` for weather.
 - **`OLLAMA_MAX_TOKENS=1024`** default — lower values can miss tool calls when many tools are registered.
 - Warm-ups (`WARM_*_AT_STARTUP`) preload models at boot.
 - DuckDuckGo needs no key; Tavily is usually better for grounding when `WEB_SEARCH_ANSWER_ONLY=true`.

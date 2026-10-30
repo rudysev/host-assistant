@@ -40,8 +40,6 @@ from host_assistant.tools.host_tools import (
 PORTAL_TOOL_TIMEOUT_S = 8.0
 
 # Appended to every setup system prompt — Ollama/Qwen-specific; host tool routing lives here too.
-OLLAMA_NO_THINK_PREFIX = "/no_think\n"
-
 HOST_SYSTEM_SUFFIX = (
     "\n\nHost guidance: Tools marked [Host] in their description run on this host; "
     "every other tool runs on the Portal. "
@@ -148,7 +146,7 @@ class Session:
                 messages = [
                     {
                         "role": "system",
-                        "content": OLLAMA_NO_THINK_PREFIX + system_prompt + HOST_SYSTEM_SUFFIX,
+                        "content": system_prompt + HOST_SYSTEM_SUFFIX,
                     }
                 ]
             self._context.set_messages(messages)

@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from host_assistant.pipeline.session import (
     HOST_SYSTEM_SUFFIX,
-    OLLAMA_NO_THINK_PREFIX,
     Session,
     filter_tool_declarations,
     parse_tool_results,
@@ -48,7 +47,7 @@ class SessionSetupTests(unittest.IsolatedAsyncioTestCase):
             [
                 {
                     "role": "system",
-                    "content": OLLAMA_NO_THINK_PREFIX + "new" + HOST_SYSTEM_SUFFIX,
+                    "content": "new" + HOST_SYSTEM_SUFFIX,
                 }
             ]
         )
@@ -64,7 +63,7 @@ class SessionSetupTests(unittest.IsolatedAsyncioTestCase):
             [
                 {
                     "role": "system",
-                    "content": OLLAMA_NO_THINK_PREFIX + "fresh" + HOST_SYSTEM_SUFFIX,
+                    "content": "fresh" + HOST_SYSTEM_SUFFIX,
                 }
             ]
         )
