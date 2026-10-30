@@ -42,8 +42,8 @@ class ControlBridge(FrameProcessor):
         self._turn_had_tts = False
         self._turn_complete_sent = False
         # True once the model calls a tool this turn — stays set across the follow-up LLM pass until
-        # playback finishes, so a second LLMFullResponseStartFrame does not reset the deferral. That pass always
-        # speaks (PostToolAnswerFallback), so its turn_complete comes after playback.
+        # playback finishes, so a second LLMFullResponseStartFrame does not reset the deferral. That pass speaks
+        # (PostToolAnswerFallback) unless the turn already spoke, so its turn_complete comes after playback.
         self._tool_round_trip = False
         self._llm_heartbeat_task: asyncio.Task | None = None
 

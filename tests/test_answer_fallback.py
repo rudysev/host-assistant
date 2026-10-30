@@ -62,6 +62,17 @@ class PostToolAnswerFallbackTests(unittest.TestCase):
         self._run(answered)
         self.assertEqual(self._spoken([LLMFullResponseStartFrame(), LLMFullResponseEndFrame()]), [])
 
+    def test_silent_answer_after_a_spoken_tool_call_pass_stays_silent(self) -> None:
+        frames = [
+            LLMFullResponseStartFrame(),
+            LLMTextFrame("You're welcome. Goodbye!"),
+            FunctionCallsStartedFrame(function_calls=[]),
+            LLMFullResponseEndFrame(),
+            LLMFullResponseStartFrame(),
+            LLMFullResponseEndFrame(),
+        ]
+        self.assertEqual(self._spoken(frames), ["You're welcome. Goodbye!"])
+
     def test_interruption_drops_the_pending_answer(self) -> None:
         self._run(self._tool_round() + [InterruptionFrame()])
         self.assertEqual(self._spoken([LLMFullResponseStartFrame(), LLMFullResponseEndFrame()]), [])

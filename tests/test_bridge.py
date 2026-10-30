@@ -88,6 +88,25 @@ class ControlBridgeTests(unittest.TestCase):
         self.assertEqual(self._controls(LLMFullResponseEndFrame()), [])
         self.assertFalse(self.bridge._turn_complete_sent)
 
+    def test_silent_answer_after_spoken_tool_call_pass_completes_after_its_playback(self) -> None:
+        """A sign-off spoken with portal.end_conversation, still playing when the silent answer pass ends."""
+        self._controls(LLMFullResponseStartFrame())
+        self._controls(_tts("Goodbye!"))
+        self._controls(FunctionCallsStartedFrame(function_calls=[]))
+        self.assertEqual(self._controls(LLMFullResponseEndFrame()), [])
+        self._controls(LLMFullResponseStartFrame())
+        self.assertEqual(self._controls(LLMFullResponseEndFrame()), [])
+        self.assertEqual(self._controls(BotStoppedSpeakingFrame()), [{"type": "turn_complete"}])
+
+    def test_silent_answer_after_spoken_tool_call_pass_completes_when_playback_already_ended(self) -> None:
+        self._controls(LLMFullResponseStartFrame())
+        self._controls(_tts("Goodbye!"))
+        self._controls(FunctionCallsStartedFrame(function_calls=[]))
+        self._controls(LLMFullResponseEndFrame())
+        self.assertEqual(self._controls(BotStoppedSpeakingFrame()), [{"type": "turn_complete"}])
+        self._controls(LLMFullResponseStartFrame())
+        self.assertEqual(self._controls(LLMFullResponseEndFrame()), [{"type": "turn_complete"}])
+
     def test_reset_turn_state_clears_bot_speaking(self) -> None:
         self.bridge._bot_speaking = True
         self.bridge.reset_turn_state()

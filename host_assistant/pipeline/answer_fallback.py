@@ -5,6 +5,10 @@ is a turn of its own, and the app keeps the turn until that answer's audio arriv
 (Qwen sometimes returns nothing after a tool result) would leave the app waiting for its 30s stall, so this sits
 between the LLM and TTS and says :data:`FALLBACK_ANSWER` in that pass instead. Chained tool rounds are answered once,
 by the last pass; a turn with no tool call is left alone.
+
+A turn that already spoke before its tool call needs no fallback: its speech completes the turn after playback
+(ControlBridge), and the answer pass may be silent on purpose. Qwen signs off, then calls portal.end_conversation,
+whose result says "If you already said goodbye, say nothing more" — a fallback there spoke "Done." after the goodbye.
 """
 
 from __future__ import annotations
@@ -34,6 +38,7 @@ class PostToolAnswerFallback(FrameProcessor):
         self._tool_round = False
         # The open LLM pass follows a tool round: it is the answer.
         self._answer_pass = False
+        # Any pass of this turn has spoken, the tool-call pass included.
         self._said = False
 
     async def process_frame(self, frame: Frame, direction: FrameDirection) -> None:
@@ -49,7 +54,6 @@ class PostToolAnswerFallback(FrameProcessor):
         if isinstance(frame, LLMFullResponseStartFrame):
             if self._tool_round:
                 self._answer_pass = True
-                self._said = False
             else:
                 self._reset()
         elif isinstance(frame, FunctionCallsStartedFrame):
